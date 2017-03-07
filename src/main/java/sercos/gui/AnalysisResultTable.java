@@ -15,11 +15,10 @@ public class AnalysisResultTable extends JTable {
         resultModel = new AnalysisResultModel();
         resultModel.setDataVector(
                 new Object [][] {
-                        {"1", "2", "1", "2", "1", "2", "00"},
-                        {"1", "2", "1", "2", "1", "2", "01"}
+
                 },
                 new String [] {
-                        "No.(rec.)", "Prec.Time/s", "EthType", "P/S", "Type&Nr.", "CP&S", "--"
+                        "No.(rec.)", "Prec.Time/s", "EthType", "P/S", "Type&Nr.", "CP&S", "Length/Byte"
                 }
         );
 

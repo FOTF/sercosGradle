@@ -21,7 +21,7 @@ public class TelegramFrame {
      */
     private String preciseCaptureTime;
 
-    private String telegramDefect;
+    private String telegramDefect = "no";
 
     public String getTelegramNumber() {
         return telegramNumber;
@@ -69,5 +69,17 @@ public class TelegramFrame {
 
     public void setTelegramDefect(String telegramDefect) {
         this.telegramDefect = telegramDefect;
+    }
+
+    @Override
+    public String toString() {
+        return "TelegramFrame{" +
+                "telegramNumber='" + telegramNumber + '\'' +
+                ", telegramLength='" + telegramLength + '\'' +
+                ", captureLength=" + captureLength +
+                ", captureTime='" + captureTime + '\'' +
+                ", preciseCaptureTime='" + preciseCaptureTime + '\'' +
+                ", telegramDefect='" + telegramDefect + '\'' +
+                '}';
     }
 }

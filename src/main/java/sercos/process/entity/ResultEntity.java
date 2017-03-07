@@ -1,12 +1,15 @@
 package sercos.process.entity;
 
 import sercos.process.common.CommonPhase;
+import sercos.process.common.SercosPhase;
 import sercos.process.common.SercosType;
 
 /**
  * Created by 宗祥 on 2017/3/2.
  */
 public class ResultEntity {
+
+    private int num;
 
     /**
      * TelegramFrame
@@ -16,17 +19,20 @@ public class ResultEntity {
 
     private Ethernet ethernet;
 
-    /**
-     * MDT还是AT
-     */
-    private SercosType sercosType;
+    private Sercos sercos;
 
     /**
      * 状态
      */
     private CommonPhase commonPhase;
 
-    private Sercos data;
+    public int getNum() {
+        return num;
+    }
+
+    public void setNum(int num) {
+        this.num = num;
+    }
 
     public TelegramFrame getTelegramFrame() {
         return telegramFrame;
@@ -34,14 +40,6 @@ public class ResultEntity {
 
     public void setTelegramFrame(TelegramFrame telegramFrame) {
         this.telegramFrame = telegramFrame;
-    }
-
-    public SercosType getSercosType() {
-        return sercosType;
-    }
-
-    public void setSercosType(SercosType sercosType) {
-        this.sercosType = sercosType;
     }
 
     public CommonPhase getCommonPhase() {
@@ -60,11 +58,21 @@ public class ResultEntity {
         this.ethernet = ethernet;
     }
 
-    public Sercos getData() {
-        return data;
+    public Sercos getSercos() {
+        return sercos;
     }
 
-    public void setData(Sercos data) {
-        this.data = data;
+    public void setSercos(Sercos sercos) {
+        this.sercos = sercos;
+    }
+
+    @Override
+    public String toString() {
+        return "ResultEntity{" +
+                "telegramFrame=" + telegramFrame +
+                ", ethernet=" + ethernet +
+                ", sercos=" + sercos +
+                ", commonPhase=" + commonPhase +
+                '}';
     }
 }

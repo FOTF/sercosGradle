@@ -1,7 +1,7 @@
 package sercos.process.entity;
 
 /**
- * Created by 宗祥 on 2017/3/2.
+ * Created by kai on 2017/3/2.
  */
 public class Ethernet {
 
@@ -49,5 +49,15 @@ public class Ethernet {
 
     public void setServiceDataUnit(String serviceDataUnit) {
         this.serviceDataUnit = serviceDataUnit;
+    }
+
+    @Override
+    public String toString() {
+        return "Ethernet{" +
+                "destAddress='" + destAddress + '\'' +
+                ", sourceAddress='" + sourceAddress + '\'' +
+                ", ethernetType='" + ethernetType + '\'' +
+                ", serviceDataUnit='" + serviceDataUnit + '\'' +
+                '}';
     }
 }

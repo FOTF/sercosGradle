@@ -87,6 +87,7 @@ public class MainFrame extends JFrame {
         jPanel2.add(analysisResultDetailPanel);
 
         //注册事件
+        EventUtils.listenerAnalysisBtn(analysisBtn, analysisResultTable);
         EventUtils.listenerTableToDetailTree(analysisResultTable, detailTree);
 
         analysisResultPanel.add(jPanel2);
@@ -143,7 +144,9 @@ public class MainFrame extends JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new MainFrame().setVisible(true);
+                MainFrame mainFrame = new MainFrame();
+                mainFrame.setTitle("Sercos 仿真分析");
+                mainFrame.setVisible(true);
             }
         });
     }

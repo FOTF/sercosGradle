@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by 宗祥 on 2017/3/2.
+ * Created by kai on 2017/3/2.
  */
 public class DateUtil {
 
@@ -13,7 +13,7 @@ public class DateUtil {
      * 纳秒转秒
      * @param nSec
      */
-    public static String nSecTiSec(long nSec){
+    public static String nSecToSec(long nSec){
         BigDecimal bigDecimal = new BigDecimal(nSec);
         BigDecimal result = bigDecimal.divide(new BigDecimal(1000 * 1000)).setScale(9, BigDecimal.ROUND_HALF_UP);
         return result.toString();
