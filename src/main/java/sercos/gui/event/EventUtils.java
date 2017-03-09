@@ -4,7 +4,9 @@ package sercos.gui.event;
 import sercos.gui.AnalysisResultModel;
 import sercos.gui.AnalysisResultTable;
 import sercos.process.entity.ResultEntity;
+import sercos.process.entity.SercosObject;
 import sercos.process.util.ReadDataFileUtil;
+import sercos.process.util.XMLReadUtil;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -20,6 +22,24 @@ import java.util.List;
  * Created by 宗祥 on 2017/3/1.
  */
 public class EventUtils {
+
+    /**
+     * 仿真按钮事件监听，选择文件
+     */
+    public static void listenerSimulationBtn(JButton simulationBtn){
+        simulationBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                JFileChooser jFileChooser = new JFileChooser();
+                int i = jFileChooser.showOpenDialog(null);
+                if(i == JFileChooser.APPROVE_OPTION){
+                    String path = jFileChooser.getSelectedFile().getAbsolutePath();
+                    SercosObject sercosObject = XMLReadUtil.readXml(path);
+                }
+            }
+        });
+    }
 
     /**
      * 分析按钮事件监听，选择文件

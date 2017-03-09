@@ -87,6 +87,7 @@ public class MainFrame extends JFrame {
         jPanel2.add(analysisResultDetailPanel);
 
         //注册事件
+        EventUtils.listenerSimulationBtn(simulationBtn);
         EventUtils.listenerAnalysisBtn(analysisBtn, analysisResultTable);
         EventUtils.listenerTableToDetailTree(analysisResultTable, detailTree);
 

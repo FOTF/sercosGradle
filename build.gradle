@@ -13,4 +13,5 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.5'
     compile "commons-io:commons-io:2.4"
+    compile group: 'dom4j', name: 'dom4j', version: '1.6.1'
 }
