@@ -38,7 +38,7 @@ public class MainFrame extends JFrame {
         detailTreeSP = new JScrollPane();
         detailTree = new JTree();
         binaryPanel = new JScrollPane();
-        simMapPanel = new JPanel();
+        simMapPanel = new DisplayPanel();
 
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
@@ -86,11 +86,6 @@ public class MainFrame extends JFrame {
 
         jPanel2.add(analysisResultDetailPanel);
 
-        //注册事件
-        EventUtils.listenerSimulationBtn(simulationBtn);
-        EventUtils.listenerAnalysisBtn(analysisBtn, analysisResultTable);
-        EventUtils.listenerTableToDetailTree(analysisResultTable, detailTree);
-
         analysisResultPanel.add(jPanel2);
 
         mainPanel.add(analysisResultPanel);
@@ -111,6 +106,11 @@ public class MainFrame extends JFrame {
         mainPanel.add(simMapPanel);
 
         getContentPane().add(mainPanel);
+
+        //注册事件
+        EventUtils.listenerSimulationBtn(simulationBtn, simMapPanel);
+        EventUtils.listenerAnalysisBtn(analysisBtn, analysisResultTable);
+        EventUtils.listenerTableToDetailTree(analysisResultTable, detailTree);
 
         pack();
     }// </editor-fold>
@@ -164,7 +164,7 @@ public class MainFrame extends JFrame {
     private AnalysisResultTable analysisResultTable;
     private JToolBar jToolBar1;
     private JPanel mainPanel;
-    private JPanel simMapPanel;
+    private DisplayPanel simMapPanel;
     private JButton simulationBtn;
     private JPanel toolPanel;
     // End of variables declaration

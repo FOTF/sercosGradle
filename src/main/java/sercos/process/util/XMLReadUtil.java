@@ -24,6 +24,7 @@ public class XMLReadUtil {
 
     public static SercosObject readXml(String xmlPath){
         SAXReader reader = new SAXReader();
+        reader.setEncoding("gbk");
         try {
             Document document = reader.read(new File(xmlPath));
             Element node = document.getRootElement();

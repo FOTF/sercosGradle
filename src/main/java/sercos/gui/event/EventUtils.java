@@ -3,6 +3,7 @@ package sercos.gui.event;
 
 import sercos.gui.AnalysisResultModel;
 import sercos.gui.AnalysisResultTable;
+import sercos.gui.DisplayPanel;
 import sercos.process.entity.ResultEntity;
 import sercos.process.entity.SercosObject;
 import sercos.process.util.ReadDataFileUtil;
@@ -26,7 +27,7 @@ public class EventUtils {
     /**
      * 仿真按钮事件监听，选择文件
      */
-    public static void listenerSimulationBtn(JButton simulationBtn){
+    public static void listenerSimulationBtn(JButton simulationBtn, DisplayPanel displayPanel){
         simulationBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -36,6 +37,10 @@ public class EventUtils {
                 if(i == JFileChooser.APPROVE_OPTION){
                     String path = jFileChooser.getSelectedFile().getAbsolutePath();
                     SercosObject sercosObject = XMLReadUtil.readXml(path);
+
+                    displayPanel.draw();
+
+                    //sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList();
                 }
             }
         });
