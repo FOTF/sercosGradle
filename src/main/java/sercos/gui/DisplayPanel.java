@@ -21,6 +21,14 @@ public class DisplayPanel extends JPanel {
 
     private Graphics graphics;
 
+    private static final int masterWidth = 100;
+
+    private static final int masterHeight = 60;
+
+    private static final int pWidth = 40;
+
+    private static final int pHeight = 30;
+
     private static final int rectX = 100;
 
     private static final int rectY = 300;
@@ -28,7 +36,6 @@ public class DisplayPanel extends JPanel {
     private static final int rectWidth = 600;
 
     private static final int rectHeight = 400;
-
 
     /**
      * 每个子片的宽度
@@ -63,14 +70,40 @@ public class DisplayPanel extends JPanel {
     public void paint(Graphics g){
         super.paint(g);
         graphics = g;
+        /*graphics.drawRect(rectX, rectY, rectWidth, rectHeight);
+        this.drawMaster();
+        this.calcSlaveLocation();
+        this.drawSlaveRects();
+        this.drawSlaveStatusOval();*/
         if(isDraw){
             graphics.drawRect(rectX, rectY, rectWidth, rectHeight);
+            this.drawMaster();
             this.calcSlaveLocation();
             this.drawSlaveRects();
             this.drawSlaveStatusOval();
         }
     }
 
+    private void drawMaster(){
+        graphics.setColor(Color.yellow);
+        graphics.fillRect(rectX - masterWidth / 2, (rectY + rectWidth) / 2 + masterHeight / 2, masterWidth, masterHeight);
+        graphics.setColor(Color.darkGray);
+        graphics.drawString("Master", rectX - masterWidth / 2 + 20, (rectY + rectWidth) / 2 + masterHeight / 2 + 30);
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(rectX - masterWidth / 2 + (masterWidth - pWidth) / 2, (rectY + rectWidth) / 2 + masterHeight / 2 - pHeight, pWidth, pHeight);
+        graphics.setColor(Color.darkGray);
+        graphics.drawString("P1", rectX - masterWidth / 2 + (masterWidth - pWidth) / 2 + 10, (rectY + rectWidth) / 2 + masterHeight / 2 - pHeight + 20);
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(rectX - masterWidth / 2 + (masterWidth - pWidth) / 2, (rectY + rectWidth) / 2 + masterHeight / 2 + masterHeight, pWidth, pHeight);
+        graphics.setColor(Color.darkGray);
+        graphics.drawString("P2", rectX - masterWidth / 2 + (masterWidth - pWidth) / 2 + 10, (rectY + rectWidth) / 2 + masterHeight / 2 + masterHeight + 20);
+    }
+
+    /**
+     * 画slave
+     */
     private void drawSlaveRects(){
         for(SlaveRect slaveRect : rectList){
             //graphics.drawRect(slaveRect.getX(), slaveRect.getY(), slaveRect.getWidth(), slaveRect.getHeight());
@@ -85,6 +118,9 @@ public class DisplayPanel extends JPanel {
         }
     }
 
+    /**
+     * 画状态圆
+     */
     private void drawSlaveStatusOval(){
         for(SlaveRect slaveRect : rectList){
             Graphics2D g2d = (Graphics2D)graphics;
