@@ -31,16 +31,13 @@ public class EventUtils {
         simulationBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 JFileChooser jFileChooser = new JFileChooser();
                 int i = jFileChooser.showOpenDialog(null);
                 if(i == JFileChooser.APPROVE_OPTION){
                     String path = jFileChooser.getSelectedFile().getAbsolutePath();
                     SercosObject sercosObject = XMLReadUtil.readXml(path);
-
+                    displayPanel.setSlaveList(sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList());
                     displayPanel.draw();
-
-                    //sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList();
                 }
             }
         });

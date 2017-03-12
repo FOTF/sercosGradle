@@ -3,8 +3,11 @@ package sercos.gui;
 import sercos.process.entity.Slave;
 import sercos.process.entity.SlaveRect;
 
-import javax.swing.JPanel;
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,18 +63,25 @@ public class DisplayPanel extends JPanel {
     public void paint(Graphics g){
         super.paint(g);
         graphics = g;
-        graphics.drawRect(rectX, rectY, rectWidth, rectHeight);
-        this.calcSlaveLocation();
-        this.drawSlaveRects();
-        this.drawSlaveStatusOval();
         if(isDraw){
-
+            graphics.drawRect(rectX, rectY, rectWidth, rectHeight);
+            this.calcSlaveLocation();
+            this.drawSlaveRects();
+            this.drawSlaveStatusOval();
         }
     }
 
     private void drawSlaveRects(){
         for(SlaveRect slaveRect : rectList){
-            graphics.drawRect(slaveRect.getX(), slaveRect.getY(), slaveRect.getWidth(), slaveRect.getHeight());
+            //graphics.drawRect(slaveRect.getX(), slaveRect.getY(), slaveRect.getWidth(), slaveRect.getHeight());
+            InputStream imgURL = getClass().getResourceAsStream("/server.png");
+            Image image = null;
+            try {
+                image = ImageIO.read(imgURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            graphics.drawImage(image, slaveRect.getX(), slaveRect.getY(), slaveRect.getWidth(), slaveRect.getHeight(), null, null);
         }
     }
 
@@ -88,7 +98,7 @@ public class DisplayPanel extends JPanel {
      */
     private void calcSlaveLocation(){
         SlaveRect slaveRect = null;
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < this.slaveList.size(); i++){
             slaveRect = new SlaveRect();
             slaveRect.setX(rectX + slaveDistance + (slaveWidth + slaveDistance) * i);
             slaveRect.setY((rectY - slaveHight / 2));
@@ -106,5 +116,13 @@ public class DisplayPanel extends JPanel {
     public void draw(){
         isDraw = true;
         this.repaint();
+    }
+
+    public List<Slave> getSlaveList() {
+        return slaveList;
+    }
+
+    public void setSlaveList(List<Slave> slaveList) {
+        this.slaveList = slaveList;
     }
 }
