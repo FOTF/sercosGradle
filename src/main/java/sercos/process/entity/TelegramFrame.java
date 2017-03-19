@@ -5,6 +5,8 @@ package sercos.process.entity;
  */
 public class TelegramFrame {
 
+    private long nowTime;
+
     private String telegramNumber;
 
     private String telegramLength;
@@ -22,6 +24,14 @@ public class TelegramFrame {
     private String preciseCaptureTime;
 
     private String telegramDefect = "no";
+
+    public long getNowTime() {
+        return nowTime;
+    }
+
+    public void setNowTime(long nowTime) {
+        this.nowTime = nowTime;
+    }
 
     public String getTelegramNumber() {
         return telegramNumber;

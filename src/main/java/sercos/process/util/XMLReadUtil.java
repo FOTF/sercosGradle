@@ -120,6 +120,10 @@ public class XMLReadUtil {
                     connection.setConnectionName(connectionElement.elementText("ConnectionName"));
                     connection.setConnectionClass(Integer.parseInt(connectionElement.elementText("ConnectionClass")));
                     connection.setConnectionConfType(connectionElement.elementText("ConnectionConfType"));
+                    //这个代表是无用的
+                    if("0xC000".equals(connection.getConnectionConfType())){
+                        continue;
+                    }
                     connection.setConnectionID(Integer.parseInt(connectionElement.elementText("ConnectionID")));
                     connection.setProducerCycleTime(Integer.parseInt(connectionElement.elementText("ProducerCycleTime")));
                     connection.setMaxDataLos(Integer.parseInt(connectionElement.elementText("MaxDataLos")));
@@ -138,9 +142,13 @@ public class XMLReadUtil {
                     }
                     List<Idn> idns = new ArrayList<>();
                     Iterator<Element> idnIterator = connectionElement.element("IdnList").elementIterator();
+                    Idn idn = null;
                     while(idnIterator.hasNext()){
-                        //idnIterator.next().getName()
-                        System.out.println("--" + idnIterator.next().getData());
+                        idn = new Idn();
+                        idn.setIdnNumber(idnIterator.next().getData().toString());
+                        idn.setTeleLen(Integer.parseInt(idnIterator.next().getData().toString()));
+                        idns.add(idn);
+                        System.out.println(idn.toString());
                     }
                     connection.setIdnList(idns);
                     connectionList.add(connection);
@@ -160,4 +168,64 @@ public class XMLReadUtil {
         System.out.println(sercosObject);
         return sercosObject;
     }
+
+    /*public static SercosObject SetOffset(SercosObject sercosobject)
+    {
+        sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList();
+        //计算每个从站MDT中数据的长度和AT中数据的长度Length = Device字节数(2byte)+Connection字节数之和
+        int num1 = 0;//当前从站之前的从站的（设备控制和Telegram==MDT的所有连接的Connection字节数之和）
+        int num2 = 0;//当前从站之前的从站的（设备状态和Telegram==AT的所有连接的Connection字节数之和）
+        for (int i = 0; i < sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().size(); i++)
+        {
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setSvcOffsetInATofCP1CP2(6 + 6 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setSvcOffsetInMDTofCP1CP2(6 + 6 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setSvcOffsetInATofCP3CP4(8 + 6 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setSvcOffsetInMDTofCP3CP4(8 + 6 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setDeviceControlOffsetofCP1CP2(6 * 128 + 4 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setDeviceStatusOffsetofCP1CP2(6 * 128 + 4 * i);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setDeviceControlOffsetofCP3CP4(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().size() + num1);
+            sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).setDeviceStatusOffsetofCP3CP4(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().size() + num2);
+
+            num1 = num1 + 2;//加当前从站的设备控制字节数
+            num2 = num2 + 2;//加当前从站的设备状态字节数
+            int num4 = 2;
+            for (int j = 0; j < sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).getConnectionList().size(); j++)
+            {
+                int num5 = 2;
+
+                if (sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).getConnectionList().get(j).getTelegram().equals("MDT") && sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).getConnectionList().get(j).getConnectionConfType().equals("0x8000"))
+                {
+                    int connectionlength = 2;//加当前连接的控制字字节数
+                    sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).getConnectionList().get(j).setConnectionOffset(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().size() + num1);
+                    num1 = num1 + 2;//加当前连接的控制字字节数
+                    for (int k = 0; k < sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().get(i).getConnectionList().get(j).getIdnList().Count; k++)
+                    {
+                        sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].setIdnOffset(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList().size() + num1);
+                        connectionlength = connectionlength + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();//加当前IDN的字节数
+                        num1 = num1 + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();//加当前IDN的字节数
+                    }
+                    sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].setLength(connectionlength);
+                }
+                if (sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getTelegram() == "AT" && sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getConnectionConfType() == "0x8000")
+                {
+                    //int num4 = 0;
+                    sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].setConnectionOffset(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList().Count + num2);
+                    num2 = num2 + 2;//加当前连接的控制字字节数
+                    int connectionlength = 2;//加当前连接的控制字字节数
+                    for (int k = 0; k < sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList().Count; k++)
+                    {
+                        sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].setIdnOffset(8 + 6 * sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList().Count + num2);
+                        connectionlength = connectionlength + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();//加当前IDN的字节数
+
+                        num2 = num2 + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();
+                        // num5 = num5 + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();
+                        // num4 = num4 + sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].getIdnList()[k].getTeleLen();
+                    }
+                    sercosobject.getManagerObject().getInitializationList().getProject().getRingList()[0].getSlaveList()[i].getConnectionList()[j].setLength(connectionlength);
+
+                }
+            }
+        }
+        return sercosobject;
+    }*/
 }

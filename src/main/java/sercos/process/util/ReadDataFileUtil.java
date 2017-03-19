@@ -14,7 +14,9 @@ import sercos.process.entity.TelegramFrame;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 读取结果文件工具类
@@ -50,13 +52,40 @@ public class ReadDataFileUtil {
             String time = lines.get(4 * i + 1);
             data = lines.get(4 * i + 2);
             resultEntity = conventLineToEntity(time, data, startTime, index += i);
-            resultEntities.add(resultEntity);
-            end++;
-            if(end == 100){
-                break;
+
+            String mdtOrAt = resultEntity.getSercos().getSercosType().getSercosTypeData().getMdtOrAt();
+            String cpNum = resultEntity.getSercos().getSercosPhase().getSercosPhaseData().getCommunPhase();
+
+            if("MDT".equals(mdtOrAt)){
+                if("CP0".equals(cpNum)){
+
+                    Map<String, Object> sercosMDT = new HashMap<>();
+                    Map<String, Object> communVersionMap = new HashMap<>();
+                    communVersionMap.put("tranmistationCP", "no trans");
+                    communVersionMap.put("structureNumTele", 2);
+                    communVersionMap.put("adressAlloc", "alloc");
+                    sercosMDT.put("communVersion", communVersionMap);
+                    resultEntity.getSercos().setSercosMDT(sercosMDT);
+
+                    resultEntities.add(resultEntity);
+                }else{
+
+                }
+            }else{
+
             }
+
+
+            end++;
+            /*if(end == 100){
+                break;
+            }*/
         }
         return resultEntities;
+    }
+
+    public static String conventEntityToString(ResultEntity resultEntity){
+        return null;
     }
 
     /**

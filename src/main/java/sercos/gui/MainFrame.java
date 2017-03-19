@@ -108,7 +108,7 @@ public class MainFrame extends JFrame {
         getContentPane().add(mainPanel);
 
         //注册事件
-        EventUtils.listenerSimulationBtn(simulationBtn, simMapPanel);
+        EventUtils.listenerSimulationBtn(simulationBtn, simMapPanel, analysisResultTable);
         EventUtils.listenerAnalysisBtn(analysisBtn, analysisResultTable);
         EventUtils.listenerTableToDetailTree(analysisResultTable, detailTree);
 

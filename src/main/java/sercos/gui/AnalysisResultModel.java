@@ -3,6 +3,7 @@ package sercos.gui;
 import sercos.process.entity.ResultEntity;
 
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ public class AnalysisResultModel extends DefaultTableModel {
     /**
      * 定义模型的内部值，方便之后构造树
      */
-    private List<ResultEntity> resultEntityList;
+    private List<ResultEntity> resultEntityList = new ArrayList<>();
 
     @Override
     public Class<?> getColumnClass(int columnIndex) {
@@ -34,6 +35,12 @@ public class AnalysisResultModel extends DefaultTableModel {
         for(int index = 0; index < resultEntityList.size(); index++){
             this.setValue(resultEntityList.get(index), index);
         }
+    }
+
+    public void addValue(ResultEntity resultEntity){
+        resultEntityList.add(resultEntity);
+        this.setNumRows(resultEntityList.size());
+        this.setValue(resultEntity, resultEntityList.size() - 1);
     }
 
     public void setValue(ResultEntity resultEntity, int index){
