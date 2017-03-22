@@ -557,6 +557,543 @@ public class MasterProcess {
         return intiResultEntity;
     }
 
+    public ResultEntity initMdtcp3Baowen(String type, int connIndex){
+
+        String blankIdnInfo = "0x00000000";
+        String idnInfo = "0x000003F6";
+
+        String opdata = "123456";
+
+        ResultEntity intiResultEntity = new ResultEntity();
+        TelegramFrame telegramFrame = new TelegramFrame();
+        telegramFrame.setTelegramLength("84");
+        telegramFrame.setNowTime(System.nanoTime());
+        intiResultEntity.setTelegramFrame(telegramFrame);
+
+        Ethernet ethernet = new Ethernet();
+        ethernet.setDestAddress("FF:FF:FF:FF:FF:FF");
+        ethernet.setSourceAddress(sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getMacAddress());
+        ethernet.setEthernetType("0x88CD");
+        intiResultEntity.setEthernet(ethernet);
+
+        Sercos sercos = new Sercos();
+        SercosPhase sercosPhase = new SercosPhase();
+        SercosPhaseData sercosPhaseData = new SercosPhaseData();
+        sercosPhaseData.setCycleCnt("0x00");
+        sercosPhaseData.setCommunPhaseSwitch("current CP");
+        sercosPhaseData.setCommunPhase("CP3");
+        sercosPhase.setSercosPhaseData(sercosPhaseData);
+        sercos.setSercosPhase(sercosPhase);
+        SercosType sercosType = new SercosType();
+        SercosTypeData sercosTypeData = new SercosTypeData();
+        sercosTypeData.setMdtOrAt("MDT");
+        sercosTypeData.setSercosTeleNum("0");
+        sercosTypeData.setPsTelegram("P");
+        sercosTypeData.setCycleCndEnable("enabled");
+        sercosType.setSercosTypeData(sercosTypeData);
+        sercos.setSercosType(sercosType);
+
+        List<Slave> slaveList = sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList();
+        Map<String, Object> slaveListMap = new HashMap<>();
+
+
+        if(StringUtils.isBlank(type)){
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "not active");
+
+                List<Connection> mdtConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("MDT") && connection.getConnectionConfType().equals("0x8000")){
+                        mdtConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= mdtConnectionList.size()){
+                    connection = mdtConnectionList.get(mdtConnectionList.size() - 1);
+                }else{
+                    connection = mdtConnectionList.get(connIndex);
+                }
+                slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+                slaveMapDetailInfo21.put("Read or Write", "R");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+        }else if("idn".equals(type)){
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "IDN");
+
+                List<Connection> mdtConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("MDT") && connection.getConnectionConfType().equals("0x8000")){
+                        mdtConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= mdtConnectionList.size()){
+                    connection = mdtConnectionList.get(mdtConnectionList.size() - 1);
+                    slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                }else{
+                    connection = mdtConnectionList.get(connIndex);
+                    slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                }
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+        }else if("opdata".equals(type)){
+
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "op.data");
+
+                List<Connection> mdtConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("MDT") && connection.getConnectionConfType().equals("0x8000")){
+                        mdtConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= mdtConnectionList.size()){
+                    connection = mdtConnectionList.get(mdtConnectionList.size() - 1);
+                    slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                }else{
+                    connection = mdtConnectionList.get(connIndex);
+                    slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                }
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+            /*for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "op.data");
+                slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "1");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), opdata);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }*/
+        }
+
+        sercos.setSlaves(slaveListMap);
+        intiResultEntity.setSercos(sercos);
+        return intiResultEntity;
+    }
+
+    public ResultEntity initAtcp3Baowen(String type, int connIndex){
+
+        String blankIdnInfo = "0x00000000";
+        String idnInfo = "0x000003F6";
+
+        String opdata = "123456";
+
+        ResultEntity intiResultEntity = new ResultEntity();
+        TelegramFrame telegramFrame = new TelegramFrame();
+        telegramFrame.setTelegramLength("92");
+        telegramFrame.setNowTime(System.nanoTime());
+        intiResultEntity.setTelegramFrame(telegramFrame);
+
+        Ethernet ethernet = new Ethernet();
+        ethernet.setDestAddress("FF:FF:FF:FF:FF:FF");
+        ethernet.setSourceAddress(sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getMacAddress());
+        ethernet.setEthernetType("0x88CD");
+        intiResultEntity.setEthernet(ethernet);
+
+        Sercos sercos = new Sercos();
+        SercosPhase sercosPhase = new SercosPhase();
+        SercosPhaseData sercosPhaseData = new SercosPhaseData();
+        sercosPhaseData.setCycleCnt("0x00");
+        sercosPhaseData.setCommunPhaseSwitch("current CP");
+        sercosPhaseData.setCommunPhase("CP3");
+        sercosPhase.setSercosPhaseData(sercosPhaseData);
+        sercos.setSercosPhase(sercosPhase);
+        SercosType sercosType = new SercosType();
+        SercosTypeData sercosTypeData = new SercosTypeData();
+        sercosTypeData.setMdtOrAt("AT");
+        sercosTypeData.setSercosTeleNum("0");
+        sercosTypeData.setPsTelegram("P");
+        sercosTypeData.setCycleCndEnable("enabled");
+        sercosType.setSercosTypeData(sercosTypeData);
+        sercos.setSercosType(sercosType);
+
+        List<Slave> slaveList = sercosObject.getManagerObject().getInitializationList().getProject().getRingList().get(0).getSlaveList();
+        Map<String, Object> slaveListMap = new HashMap<>();
+
+
+        if(StringUtils.isBlank(type)){
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "not active");
+
+                //只获取AT的connection
+                List<Connection> atConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("AT") && connection.getConnectionConfType().equals("0x8000")){
+                        atConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= atConnectionList.size()){
+                    connection = atConnectionList.get(atConnectionList.size() - 1);
+                    slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                }else{
+                    connection = atConnectionList.get(connIndex);
+                    slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                }
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+
+                slaveMapDetailInfo21.put("Read or Write", "R");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+            /*for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "no active");
+                slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                slaveMapDetailInfo21.put("Read or Write", "R");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "1");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), blankIdnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }*/
+        }else if("idn".equals(type)){
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "IDN");
+
+                //只获取AT的connection
+                List<Connection> atConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("AT") && connection.getConnectionConfType().equals("0x8000")){
+                        atConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= atConnectionList.size()){
+                    connection = atConnectionList.get(atConnectionList.size() - 1);
+                    slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                }else{
+                    connection = atConnectionList.get(connIndex);
+                    slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                }
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+        }else if("opdata".equals(type)){
+
+            for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapConnectionInfo = new HashMap<>();
+                Map<String, Object> connectionControlMap = new HashMap<>();
+                connectionControlMap.put("Producer Ready", "not vaild");
+                connectionControlMap.put("New Data", "0");
+                connectionControlMap.put("Data Field Delay", "no delay");
+                connectionControlMap.put("Flow Control", "run");
+                connectionControlMap.put("Real-time Bit 1", "0");
+                connectionControlMap.put("Real-time Bit 2", "0");
+                connectionControlMap.put("Counter", "0");
+                slaveMapConnectionInfo.put("Connection Control", connectionControlMap);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "op.data");
+
+                //只获取AT的connection
+                List<Connection> atConnectionList = new ArrayList<>();
+                List<Connection> connectionList = slaveList.get(i).getConnectionList();
+                for(Connection connection : connectionList){
+                    if(connection.getTelegram().equals("AT") && connection.getConnectionConfType().equals("0x8000")){
+                        atConnectionList.add(connection);
+                    }
+                }
+                //只获取MDT的connection
+                Connection connection = null;
+                if(connIndex >= atConnectionList.size()){
+                    connection = atConnectionList.get(atConnectionList.size() - 1);
+                    slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                }else{
+                    connection = atConnectionList.get(connIndex);
+                    slaveMapDetailInfo21.put("Last transimssion", "in progr.");
+                }
+
+                Map<String, Object> connectionDataMap = new HashMap<>();
+                List<Idn> idnList = connection.getIdnList();
+                for(Idn idn : idnList){
+                    connectionDataMap.put(idn.getIdnNumber(), this.getVal(idn.getTeleLen()));
+                }
+                slaveMapConnectionInfo.put("Connection Data", connectionDataMap);
+                slaveMapDetail.put("Connections - Slave " + (i + 1) + ":0x0000", slaveMapConnectionInfo);
+
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "0");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), idnInfo);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }
+
+
+            /*for(int i = 0; i < slaveList.size(); i++){
+                Map<String, Object> slaveMap = new HashMap<>();
+                Map<String, Object> slaveMapDetail = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo1 = new HashMap<>();
+                slaveMapDetailInfo1.put("Idenfication", "no request");
+                slaveMapDetailInfo1.put("Topology handshake", "0");
+                slaveMapDetailInfo1.put("Topology Control", "FF.");
+                slaveMapDetailInfo1.put("Control physical topology", "broken");
+                slaveMapDetailInfo1.put("Master Vaild Node", "no vaild");
+                slaveMapDetail.put("Device Control - Slave " + (i + 1) + ":0x0000", slaveMapDetailInfo1);
+
+                Map<String, Object> slaveMapDetailInfo2 = new HashMap<>();
+                Map<String, Object> slaveMapDetailInfo21 = new HashMap<>();
+                slaveMapDetailInfo21.put("Element", "op.data");
+                slaveMapDetailInfo21.put("Last transimssion", "last trans");
+                slaveMapDetailInfo21.put("Read or Write", "W");
+                slaveMapDetailInfo21.put("Mast Handshake Bit", "1");
+                slaveMapDetailInfo2.put("SVC Control - Slave " + (i + 1) + ": 0x0001", slaveMapDetailInfo21);
+                slaveMapDetailInfo2.put("MDT SVC Info - Slave " + (i + 1), opdata);
+                slaveMapDetail.put("SVC - Slave " + (i + 1) + ":0x01 0x00 0x00 0x00 0x00 0x00", slaveMapDetailInfo2);
+                slaveMap.put("Slave " + (i + 1) + ":[Addr. " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr() + "]", slaveMapDetail);
+                slaveListMap.put("Slave " + slaveList.get(i).getMacAddress() + " " + slaveList.get(i).getDrvAdr(), slaveMap);
+            }*/
+        }
+
+        sercos.setSlaves(slaveListMap);
+        intiResultEntity.setSercos(sercos);
+        return intiResultEntity;
+    }
+
+
+    private String getVal(int length){
+        String str = "0x";
+        for (int i = 0; i < length; i++){
+            str += "0";
+        }
+        return str;
+    }
+
 
 
     /**

@@ -103,7 +103,7 @@ public class EventUtils {
                 createMdtCp0Tree(resultDetailTree, resultEntity);
             }else if("CP1".equals(cpNum)){
                 createMdtCp1Tree(resultDetailTree, resultEntity);
-            }else if("CP2".equals(cpNum)){
+            }else if("CP2".equals(cpNum) || "CP3".equals(cpNum)){
                 createMdtCp2Tree(resultDetailTree, resultEntity);
             }
         }else if("AT".equals(mdtOrAt)){
@@ -111,7 +111,7 @@ public class EventUtils {
                 createAtCp0Tree(resultDetailTree, resultEntity);
             }else if("CP1".equals(cpNum)){
                 createAtCp1Tree(resultDetailTree, resultEntity);
-            }else if("CP2".equals(cpNum)){
+            }else if("CP2".equals(cpNum) || "CP3".equals(cpNum)){
                 createAtCp2Tree(resultDetailTree, resultEntity);
             }
         }

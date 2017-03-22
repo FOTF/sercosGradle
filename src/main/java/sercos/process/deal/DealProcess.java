@@ -315,8 +315,160 @@ public class DealProcess implements Runnable {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+            //构建cp3阶段的mdt和at报文
+            //mdt connection数量
+            /*List<Connection> mdtConnectionList = new ArrayList<>();
+            List<Connection> atConnectionList = new ArrayList<>();
+            List<Connection> connectionList = slaveList.get(i).getConnectionList();
+            for(Connection connection : connectionList){
+                if(!connection.getConnectionConfType().equals("0x8000")){
+                    continue;
+                }
+                if(connection.getTelegram().equals("AT")){
+                    atConnectionList.add(connection);
+                }else if(connection.getTelegram().equals("MDT")){
+                    mdtConnectionList.add(connection);
+                }
+            }*/
 
+            ResultEntity startMdtcp3ResultEntity1 = null;
+            ResultEntity startMdtcp3ResultEntity2 = null;
 
+            ResultEntity startAtcp3ResultEntity1 = null;
+            ResultEntity startAtcp3ResultEntity2 = null;
+
+            for(int i3 = 0; i3 < 2; i3++){
+                startMdtcp3ResultEntity1 = masterProcess.initMdtcp3Baowen("", i3);
+                startMdtcp3ResultEntity2 = masterProcess.initMdtcp3Baowen("", i3);
+
+                baowenList.add(startMdtcp3ResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3ResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startMdtcp3ResultEntity2);
+                }
+                baowenList.add(startMdtcp3ResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3ResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //发送at报文
+
+                startAtcp3ResultEntity1 = masterProcess.initAtcp3Baowen("", i3);
+                startAtcp3ResultEntity2 = masterProcess.initAtcp3Baowen("", i3);
+
+                baowenList.add(startAtcp3ResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3ResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startAtcp3ResultEntity2);
+                }
+                baowenList.add(startAtcp3ResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3ResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //-----------------idn-----------------------
+
+                ResultEntity startMdtcp3IdnResultEntity1 = masterProcess.initMdtcp3Baowen("idn", i3);
+                ResultEntity startMdtcp3IdnResultEntity2 = masterProcess.initMdtcp3Baowen("idn", i3);
+
+                baowenList.add(startMdtcp3IdnResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3IdnResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startMdtcp3IdnResultEntity2);
+                }
+                baowenList.add(startMdtcp3IdnResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3IdnResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //发送at报文
+
+                ResultEntity startAtcp3IdnResultEntity1 = masterProcess.initAtcp3Baowen("idn", i3);
+                ResultEntity startAtcp3IdnResultEntity2 = masterProcess.initAtcp3Baowen("idn", i3);
+
+                baowenList.add(startAtcp3IdnResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3IdnResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startAtcp3IdnResultEntity2);
+                }
+                baowenList.add(startAtcp3IdnResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3IdnResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                //--------------opdata-----------------------
+                ResultEntity startMdtcp3OpdataResultEntity1 = masterProcess.initMdtcp3Baowen("opdata", i3);
+                ResultEntity startMdtcp3OpdataResultEntity2 = masterProcess.initMdtcp3Baowen("opdata", i3);
+
+                baowenList.add(startMdtcp3OpdataResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3OpdataResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startMdtcp3OpdataResultEntity2);
+                }
+                baowenList.add(startMdtcp3OpdataResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startMdtcp3OpdataResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //发送at报文
+
+                ResultEntity startAtcp3OpdataResultEntity1 = masterProcess.initAtcp3Baowen("opdata", i3);
+                ResultEntity startAtcp3OpdataResultEntity2 = masterProcess.initAtcp3Baowen("opdata", i3);
+
+                baowenList.add(startAtcp3OpdataResultEntity1);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3OpdataResultEntity1);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                for(SlaveProcess slaveProcess : slaveProcessList){
+                    slaveProcess.receiveMdtAndDeal(startAtcp3OpdataResultEntity2);
+                }
+                baowenList.add(startAtcp3OpdataResultEntity2);
+                ((AnalysisResultModel)resultTable.getModel()).addValue(startAtcp3OpdataResultEntity2);
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
 
